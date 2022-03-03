@@ -1,18 +1,35 @@
-# morse_code_flasher
+# Morse Code Flasher
+Turn any text into Morse Code with this simple app. Friendly live conversion of text to Morse Code helps to learn each morse code of each letter in english alphabet.
 
-Android app to convert morse code to flashlight signals.
+## Team members
+1. [Nasrin](https://github.com/nsrinn)
+2. [Sharun E Rajeev](https://github.com/sharunrajeev)
 
-Am fun app created as part of co-coder event by TinkerHub.
+## Team ID
+Flutter / 52
 
-## Getting Started
+## Link to product walkthrough
+[link to video]
 
-This project is a starting point for a Flutter application.
+## How it Works ?
+1. Step 1
+2. Step 2
 
-A few resources to get you started if this is your first Flutter project:
+## Libraries used
+1. Flutter
+2. Dart
+3. torch_light (for using torch)
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+## How to configure
+1. Go to the project folder.
+2. Run the following command: 
+```
+flutter pub get
+```
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## How to Run
+1. Go to the project directory
+2. Run the following command:
+```
+flutter run
+```

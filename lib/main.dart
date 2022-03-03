@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'morse.dart';
+import 'flash_controller.dart';
 
 void main() {
   runApp(const MyApp());
@@ -6,108 +8,155 @@ void main() {
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
-
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Morse Code Flasher',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.amber,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const HomePage(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
+class HomePage extends StatefulWidget {
+  const HomePage({Key? key}) : super(key: key);
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  _HomePageState createState() => _HomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+class _HomePageState extends State<HomePage> {
+  // Create a text controller and use it to retrieve the current value of the TextField.
+  final myController = TextEditingController();
+  String currentLetter = "";
+  String currentMorse = "";
+  String morseString = "";
+  String inputString = "";
+  bool errorFlag = false;
+  String errorMessage = "";
 
-  void _incrementCounter() {
+  // Button text
+  String buttonText = "Flash it!";
+
+  // Check if buttons are active
+  bool isActive = false;
+
+  void startFlash() async {
+    setInputText(myController.text);
+    setMorseCode(MorseCode.stringToMorse(myController.text));
+    List<String> morseWords = morseString.split("/ ");
+    int stringLetterIndex = 0;
+    for (int i = 0; i < morseWords.length; i++) {
+      String morseWord = morseWords[i];
+      List<String> morseLetters = morseWord.split(" ");
+      morseLetters.removeLast();
+
+      for (int j = 0; j < morseLetters.length; j++) {
+        String morseLetter = morseLetters[j];
+        updateLetters(myController.text[stringLetterIndex], morseLetter);
+        await FlashController.flashLetter(morseLetter);
+        stringLetterIndex++;
+      }
+      FlashController.pause(7 * FlashController.timeUnit);
+    }
+    updateLetters("", "");
+  }
+
+  //syncs the letter currently being flashed with one on screen
+  void updateLetters(String letter, String morse) {
     setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
+      currentLetter = letter;
+      currentMorse = morse;
+    });
+  }
+
+  void setMorseCode(String morse) {
+    setState(() {
+      morseString = morse;
+    });
+  }
+
+  void setInputText(String input) {
+    setState(() {
+      inputString = input;
+    });
+  }
+
+  void setErrorFlag(String e) {
+    setState(() {
+      errorFlag = true;
+      errorMessage = e;
     });
   }
 
   @override
+  void dispose() {
+    // Clean up the controller when the widget is disposed.
+    myController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+        title: const Text('Morse Code Flasher'),
       ),
       body: Center(
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-          ],
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextField(
+                    controller: myController,
+                    textAlign: TextAlign.center,
+                    decoration: const InputDecoration(
+                      hintText: 'What do you wanna flash out?',
+                    ),
+                    maxLength: 50,
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ElevatedButton(
+                    child: const Text('Flash'),
+                    onPressed: () {
+                      startFlash();
+                    },
+                  ),
+                ),
+                Column(children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      inputString != '' ? '$inputString -> $morseString' : '',
+                      style: const TextStyle(fontSize: 20),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      currentLetter,
+                      style: const TextStyle(fontSize: 40),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      currentMorse,
+                      style: const TextStyle(fontSize: 30),
+                    ),
+                  )
+                ]),
+                const FlashController()
+              ]),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }

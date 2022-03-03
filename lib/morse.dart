@@ -42,7 +42,8 @@ class MorseCode {
   };
 
   //converts the string to morse code using our dict
-  //each letter is followed by a £ so we can differentiate
+  //each letter is followed by a space and each word
+  //is followed by # so we can differentiate
   //between spaces between words and between letters
   static String stringToMorse(String entry) {
     String morse = "";
@@ -50,14 +51,13 @@ class MorseCode {
     for (int i = 0; i < entry.length; i++) {
       String letter = entry[i].toLowerCase();
 
-      if (morseDict.containsKey(letter)) {
+      if (letter == " ") {
+        morse += "/ ";
+      } else if (morseDict.containsKey(letter)) {
         morse += morseDict[letter]!;
-        morse += "£";
-      } else if (letter == " ") {
         morse += " ";
       }
     }
-    print(morse);
     return morse;
   }
 }
