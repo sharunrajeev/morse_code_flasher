@@ -9,7 +9,7 @@ Turn any text into Morse Code with this simple app. Friendly live conversion of 
 Flutter / 52
 
 ## Link to product walkthrough
-[link to video]
+[link to video](https://www.loom.com/share/c49f41309daa4a2ba0514e12c5c737b5)
 
 ## How it Works ?
 1. Step 1
